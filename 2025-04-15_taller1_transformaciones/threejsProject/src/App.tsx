@@ -1,5 +1,5 @@
-import { useRef, useState, useMemo } from 'react';
-import { Canvas, useFrame, ThreeElements } from '@react-three/fiber';
+import { useRef, useState } from 'react';
+import { Canvas, useFrame } from '@react-three/fiber';
 import { OrbitControls, Environment, Float, Text } from '@react-three/drei';
 import * as THREE from 'three';
 import './App.css';
