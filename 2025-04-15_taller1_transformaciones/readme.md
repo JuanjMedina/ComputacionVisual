@@ -24,7 +24,7 @@ Implementación en Python usando NumPy y Matplotlib que aplica transformaciones 
 
 ```python
 # Funciones para crear matrices de transformación
-def traslacion_matriz(tx, ty):
+def traslacion_matriz(tx, ty):canva
     return np.array([
         [1, 0, tx],
         [0, 1, ty],
