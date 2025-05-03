@@ -100,7 +100,7 @@ Características clave:
 
 La implementación en Python generó una visualización estática del modelo mostrando sus componentes estructurales, así como una animación de rotación:
 
-![barril_rotacion](./python/barril_rotacion.gif)
+![barril_rotacion](./python/barril_rotacion_mejorado.gif)
 
 ### React Three Fiber - Visualización Interactiva
 
