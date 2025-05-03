@@ -1,9 +1,9 @@
-import { useState, Suspense, useEffect } from 'react';
+import { useState, Suspense, useEffect, useRef, useCallback } from 'react';
 import { Canvas } from '@react-three/fiber';
 import { OrbitControls, Html, Stats } from '@react-three/drei';
 import { useLoader } from '@react-three/fiber';
 import { Mesh, MeshStandardMaterial, DoubleSide } from 'three';
-import { useControls } from 'leva';
+import { useControls, button } from 'leva';
 import { OBJLoader } from 'three/examples/jsm/loaders/OBJLoader.js';
 import './App.css';
 
@@ -160,15 +160,162 @@ function App() {
     faces: 0,
     edges: 0,
   });
+  const [isRecording, setIsRecording] = useState(false);
+  const [gifFrames, setGifFrames] = useState<string[]>([]);
+  const [downloadUrl, setDownloadUrl] = useState<string | null>(null);
+  const [showDownloadNotice, setShowDownloadNotice] = useState(false);
+  const canvasRef = useRef<HTMLCanvasElement | null>(null);
+  const recordingIntervalRef = useRef<number | null>(null);
 
   // Function to receive stats from ModelViewer
   const updateStats = (stats: ModelStats) => {
     setModelStats(stats);
   };
 
+  // Handle recording start and stop
+  const toggleRecording = useCallback(() => {
+    if (isRecording) {
+      stopRecording();
+    } else {
+      startRecording();
+    }
+  }, [isRecording]);
+
+  // Recording controls
+  useControls({
+    'Record GIF': button(() => {
+      toggleRecording();
+    }),
+  });
+
+  // Function to start recording
+  const startRecording = () => {
+    console.log('Starting recording...');
+    setIsRecording(true);
+    setGifFrames([]);
+
+    // Capture frames every 100ms (10 fps)
+    recordingIntervalRef.current = window.setInterval(() => {
+      const canvas = document.querySelector('canvas');
+      if (canvas) {
+        const frame = canvas.toDataURL('image/png');
+        setGifFrames(prev => [...prev, frame]);
+      }
+    }, 100);
+
+    console.log('Recording started...');
+  };
+
+  // Function to stop recording and generate GIF
+  const stopRecording = async () => {
+    console.log('Stopping recording...');
+
+    if (recordingIntervalRef.current) {
+      clearInterval(recordingIntervalRef.current);
+      recordingIntervalRef.current = null;
+    }
+
+    setIsRecording(false);
+    console.log('Recording stopped. Generating GIF...');
+
+    if (gifFrames.length === 0) {
+      console.error('No frames captured');
+      return;
+    }
+
+    try {
+      // Dynamic import of gif.js
+      const GifJs = await import('gif.js');
+      const GIF = GifJs.default || GifJs;
+
+      const gif = new GIF({
+        workers: 2,
+        quality: 10,
+        width: 800, // Match your canvas size or scale as needed
+        height: 600, // Match your canvas size or scale as needed
+        workerScript: '/gif.worker.js', // You'll need to serve this file
+      });
+
+      // Add each frame to the GIF
+      const promises = gifFrames.map(dataUrl => {
+        return new Promise(resolve => {
+          const img = new Image();
+          img.onload = () => {
+            gif.addFrame(img, { delay: 100 }); // 100ms delay between frames
+            resolve(null);
+          };
+          img.src = dataUrl;
+        });
+      });
+
+      // Wait for all frames to be added
+      await Promise.all(promises);
+
+      // Render the GIF
+      gif.render();
+
+      // When the GIF is finished rendering
+      gif.on('finished', (blob: Blob) => {
+        // Create a download link for the GIF
+        const url = URL.createObjectURL(blob);
+
+        // Save URL to state for manual download
+        setDownloadUrl(url);
+
+        // Show download notice
+        setShowDownloadNotice(true);
+
+        // Also try automatic download
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = 'model-animation.gif';
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+
+        console.log('GIF generated and download started!');
+      });
+    } catch (error) {
+      console.error('Error generating GIF:', error);
+    }
+  };
+
+  // Clean up URL when component unmounts
+  useEffect(() => {
+    return () => {
+      if (downloadUrl) {
+        URL.revokeObjectURL(downloadUrl);
+      }
+      if (recordingIntervalRef.current) {
+        clearInterval(recordingIntervalRef.current);
+      }
+    };
+  }, [downloadUrl]);
+
   return (
     <div className="app-container">
       <h1>3D Model Viewer</h1>
+      {isRecording && (
+        <div className="recording-indicator">🔴 Recording...</div>
+      )}
+      {showDownloadNotice && (
+        <div className="download-notice">
+          <p>¡GIF generado correctamente!</p>
+          <div className="download-buttons">
+            <button onClick={() => setShowDownloadNotice(false)}>Cerrar</button>
+            {downloadUrl && (
+              <a
+                href={downloadUrl}
+                download="model-animation.gif"
+                className="download-button"
+                onClick={() => console.log('Manual download clicked')}
+              >
+                Guardar GIF
+              </a>
+            )}
+          </div>
+        </div>
+      )}
       <div className="main-content">
         <div className="canvas-container">
           <Canvas camera={{ position: [0, 0, 5], fov: 50 }} shadows>
@@ -193,6 +340,21 @@ function App() {
             <p>Vertices: {modelStats.vertices}</p>
             <p>Faces: {Math.round(modelStats.faces)}</p>
             <p>Edges: {Math.round(modelStats.edges)}</p>
+            <button
+              onClick={toggleRecording}
+              style={{
+                marginTop: '20px',
+                padding: '8px 16px',
+                background: isRecording ? '#ff4444' : '#4CAF50',
+                color: 'white',
+                border: 'none',
+                borderRadius: '4px',
+                cursor: 'pointer',
+                width: '100%',
+              }}
+            >
+              {isRecording ? 'Stop Recording' : 'Start Recording'}
+            </button>
           </div>
         </div>
       </div>
