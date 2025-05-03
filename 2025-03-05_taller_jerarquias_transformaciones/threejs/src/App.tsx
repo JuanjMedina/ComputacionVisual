@@ -99,6 +99,7 @@ function Scene() {
 }
 
 const infoPanelStyle: CSSProperties = {
+  
   position: 'absolute',
   bottom: '20px',
   right: '20px',
