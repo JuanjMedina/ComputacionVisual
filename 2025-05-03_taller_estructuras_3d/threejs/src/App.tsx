@@ -2,13 +2,7 @@ import { useState, Suspense, useEffect } from 'react';
 import { Canvas } from '@react-three/fiber';
 import { OrbitControls, Html, Stats } from '@react-three/drei';
 import { useLoader } from '@react-three/fiber';
-import {
-  Mesh,
-  MeshStandardMaterial,
-  DoubleSide,
-  BufferGeometry,
-  BufferAttribute,
-} from 'three';
+import { Mesh, MeshStandardMaterial, DoubleSide } from 'three';
 import { useControls } from 'leva';
 import { OBJLoader } from 'three/examples/jsm/loaders/OBJLoader.js';
 import './App.css';
