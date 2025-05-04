@@ -110,9 +110,4 @@ def apply_filter(gray, filt_idx, ksize):
 
 ## 💬 Reflexión Final
 
-
-Responde en 2-3 párrafos:
-
-- ¿Qué aprendiste o reforzaste con este taller sobre OpenCV, filtros y manejo de imágenes/video?
-- ¿Qué parte fue más compleja (manejar los trackbars, entender los kernels, la lógica de actualización) o interesante?
-- ¿Qué mejorarías (añadir más filtros, guardar la imagen resultante, mejorar la interfaz) o qué aplicarías en futuros proyectos?
+Con este taller reforcé mi comprensión sobre cómo funciona la visión artificial y cómo los computadores procesan imágenes en escala de grises. Aprendí a utilizar OpenCV para aplicar filtros como el blur y sharpen, así como a detectar bordes usando Sobel y Laplaciano. Además, entendí mejor cómo se combinan los arrays (kernels) con las imágenes para resaltar ciertas características visuales, como los contornos.
