@@ -14,14 +14,11 @@ Generar objetos 3D de manera programada a partir de listas de coordenadas o dato
 
 ## 🧠 Conceptos Aprendidos
 
-Lista los principales conceptos aplicados:
-
-- [ ] Transformaciones geométricas (escala, rotación, traslación)
-- [ ] Segmentación de imágenes
-- [ ] Shaders y efectos visuales
-- [ ] Entrenamiento de modelos IA
-- [ ] Comunicación por gestos o voz
-- [ ] Otro: **********\_\_\_**********
+- **Programación de geometría 3D**: Generación de objetos tridimensionales mediante código.
+- **Parametrización desde datos**: Controlar propiedades de objetos (posición, escala, color) usando listas, arrays o archivos externos (.csv, .json).
+- **Bucles y condicionales aplicados a gráficos**: Uso de estructuras de control para crear escenas dinámicas y adaptativas.
+- **Exportación de modelos 3D**: Guardar objetos en formatos estándar como `.OBJ`, `.STL` o `.GLTF`.
+- **Visualización interactiva**: Renderizado en tiempo real con herramientas como vedo, open3d, o React Three Fiber.
 
 ---
 
