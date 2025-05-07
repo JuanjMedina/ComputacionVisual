@@ -1,35 +1,60 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import { useState } from 'react';
+import { Canvas } from '@react-three/fiber';
+import './App.css'; // Asegúrate de importar los estilos
+import ModelViewer from './components/ModelViewer';
+import ModelInfoPanel from './components/ModelInfoPanel';
+import * as THREE from 'three'; // Import THREE
 
 function App() {
-  const [count, setCount] = useState(0)
+  const [format, setFormat] = useState('OBJ');
+  const [verticesCount, setVerticesCount] = useState(0);
+
+  const handleModelLoaded = (model: THREE.Object3D) => {
+    let vertices = 0;
+    model.traverse?.((child: any) => {
+      // child can be a Mesh or other Object3D types
+      if ((child as THREE.Mesh).isMesh) {
+        const mesh = child as THREE.Mesh;
+        vertices += mesh.geometry.attributes?.position?.count || 0;
+      }
+    });
+    setVerticesCount(vertices);
+  };
 
   return (
     <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
+      {/* UI Controls Container */}
+      <div className="ui-container">
+        {/* Format Selector */}
+        <div className="ui-card">
+          <label htmlFor="format" className="format-label">
+            Formato del Modelo
+          </label>
+          <select
+            id="format"
+            value={format}
+            onChange={e => setFormat(e.target.value)}
+            className="select-format"
+          >
+            <option value="OBJ">OBJ</option>
+            <option value="STL">STL</option>
+            <option value="GLB">GLB/GLTF</option>
+          </select>
+        </div>
+
+        {/* Model Info Panel */}
+        <ModelInfoPanel format={format} verticesCount={verticesCount} />
       </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
+
+      {/* Full-screen 3D Canvas */}
+      <div className="model-container">
+        <Canvas>
+          <ModelViewer format={format} onModelLoaded={handleModelLoaded} />
+        </Canvas>
       </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
     </>
-  )
+  );
 }
 
-export default App
+export default App;
+
