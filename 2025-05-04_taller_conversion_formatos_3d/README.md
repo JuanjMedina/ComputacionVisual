@@ -189,7 +189,7 @@ const stlMesh = new THREE.Mesh(
 
 **Visualización Three.js:**
 
-![Visualización Three.js](threejs/results/VisualizeConvertFormat3d.gif)
+![Visualización Three.js](threejs/results/visualizeVideoConvertFormat3d.gif)
 
 ---
 
